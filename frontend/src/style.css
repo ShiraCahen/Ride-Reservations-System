@@ -1,0 +1,333 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  color: #1d2939;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.layout {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.title-section {
+  flex: 1;
+}
+
+.create-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-top: 12px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.25);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.08);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+input:not([type='checkbox']),
+textarea,
+button {
+  font: inherit;
+  padding: 10px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+}
+
+input.input-invalid:not([type='checkbox']),
+textarea.input-invalid {
+  border-color: #d92d20;
+}
+
+input.input-invalid:not([type='checkbox']):focus,
+textarea.input-invalid:focus {
+  border-color: #d92d20;
+  box-shadow: 0 0 0 2px rgba(217, 45, 32, 0.2);
+  outline: none;
+}
+
+.field-error-msg {
+  color: #b42318;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  margin: 4px 0 0;
+}
+
+.form-submit-error {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.error {
+  color: #b42318;
+  text-align: center;
+}
+
+button {
+  cursor: pointer;
+  background: #175cd3;
+  color: #fff;
+  border: none;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.create-btn:hover {
+  background: #0069d9;
+  box-shadow: 0 3px 10px rgba(0, 123, 255, 0.35);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.required-marker {
+  color: #d92d20;
+  font-weight: 700;
+}
+
+.label-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.checkbox-group {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+}
+
+.checkbox-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.submit-reservation-btn {
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin-top: 22px;
+  padding: 12px 32px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  background: #007bff;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.25);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.submit-reservation-btn:hover:not(:disabled) {
+  background: #0069d9;
+  box-shadow: 0 3px 10px rgba(0, 123, 255, 0.35);
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .create-btn {
+    margin-left: 0;
+    margin-top: 4px;
+  }
+
+  .submit-reservation-btn {
+    margin-top: 18px;
+    width: min(100%, 320px);
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.container {
+  padding: 15px;
+  max-width: 500px; 
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.header h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.list-section + .list-section {
+  margin-top: 36px;
+  padding-top: 8px;
+  border-top: 1px solid #eaecf0;
+}
+
+.section-empty {
+  margin: -8px 0 12px;
+  color: #667085;
+  font-size: 0.9375rem;
+}
+
+.cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.res-card {
+  background: #fff;
+  border-radius: 8px;
+  border-left: 5px solid #007bff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.res-card--past {
+  border-left-color: #98a2b3;
+}
+
+.res-card--past .main-info .name {
+  color: #344054;
+}
+
+.res-card--past .time {
+  color: #667085 !important;
+}
+
+.card-actions--past button {
+  flex: 1;
+}
+
+.card-body {
+  padding: 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.main-info .name {
+  font-weight: bold;
+  font-size: 1.05rem;
+  color: #222;
+}
+
+.main-info .passengers {
+  font-size: 0.85rem;
+  color: #666;
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.route-info {
+  font-size: 0.9rem;
+  color: #444;
+  flex-wrap: wrap; 
+}
+
+.time {
+  color: #007bff;
+  font-weight: 500;
+}
+
+.contact-info {
+  margin-bottom: 0;
+  color: #777;
+}
+
+.special-req-row {
+  margin-top: 6px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.special-req-row strong {
+  color: #444;
+  font-weight: 600;
+}
+
+.card-actions {
+  display: flex;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+
+.card-actions button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn-edit {
+  color: #007bff;
+  border-right: 1px solid #eee !important;
+}
+
+.btn-delete {
+  color: #dc3545;
+}
+
+.card-actions button:hover {
+  background: #f0f0f0;
+}
