@@ -80,7 +80,11 @@ function applyFavorite(fav: FavoriteLocation) {
 }
  
 // ── Form setup ──────────────────────────────────────────────────────────────
-const nowPlusOneHour = new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16);
+function toLocalDatetimeString(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+const nowPlusOneHour = toLocalDatetimeString(new Date(Date.now() + 60 * 60 * 1000));
  
 function pickupIsoToDatetimeLocal(iso: string): string {
   const d = new Date(iso);
@@ -256,7 +260,7 @@ async function submitForm() {
         >
           <span class="fav-icon">{{ fav.icon }}</span>
           <span class="fav-label">{{ fav.label }}</span>
-          <span class="fav-dest">- {{ fav.dropoffLocation }}</span>
+          <span class="fav-dest">  {{ fav.dropoffLocation }}</span>
         </button>
       </div>
       <p v-if="activeFavorite" class="favorites-hint">

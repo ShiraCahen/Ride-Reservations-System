@@ -7,12 +7,9 @@ import type { Reservation } from '../types';
 const route = useRoute();
 const router = useRouter();
 const RESERVATION_EDIT_DRAFT_KEY = 'hq-reservation-edit-draft';
- 
 const reservations = ref<Reservation[]>([]);
 const isLoading = ref(true);
 const errorMessage = ref('');
- 
-// --- Search & Filter state ---
 const searchQuery = ref('');
 const debouncedQuery = ref('');
 const activeFilter = ref<'all' | 'upcoming' | 'past'>('all');
@@ -74,10 +71,10 @@ const pastReservations = computed(() =>
 const reservationSections = computed(() => {
   const sections = [];
   if (activeFilter.value !== 'past') {
-    sections.push({ id: 'upcoming', title: 'Upcoming Reservations', items: upcomingReservations.value });
+    sections.push({ id: 'upcoming', title: 'Upcoming Rides', items: upcomingReservations.value });
   }
   if (activeFilter.value !== 'upcoming') {
-    sections.push({ id: 'past', title: 'Past Reservations', items: pastReservations.value, muted: true });
+    sections.push({ id: 'past', title: 'Past Rides', items: pastReservations.value, muted: true });
   }
   return sections;
 });
@@ -130,7 +127,8 @@ watch(
 );
 </script>
  
-<template>
+<template><section class="card">
+
   <section class="container">
     <p v-if="isLoading" class="state-msg">Loading...</p>
     <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -196,7 +194,7 @@ watch(
           </div>
  
           <p v-if="section.items.length === 0" class="section-empty">
-            {{ section.id === 'past' ? 'No past reservations yet.' : 'No upcoming reservations.' }}
+            {{ section.id === 'past' ? 'No reservations.' : 'No upcoming reservations.' }}
           </p>
  
           <div v-else class="cards-list">
@@ -220,15 +218,12 @@ watch(
                   </div>
                 </div>
  
-                <div class="row contact-info">
-                  <small>Phone: {{ res.phoneNumber }}</small>
-                </div>
- 
                 <div class="special-req-row">
                   <small>
                     <strong>Special requirements:</strong>
                     {{ res.specialRequirements?.length ? res.specialRequirements.join(', ') : 'None' }}
                   </small>
+                  <small>📞 {{ res.phoneNumber }}</small>
                 </div>
               </div>
  
@@ -241,5 +236,5 @@ watch(
         </div>
       </template>
     </template>
-  </section>
+  </section></section>
 </template>
