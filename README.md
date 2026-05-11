@@ -1,8 +1,8 @@
 # Ride Reservations System
 
 A Small full-stack ride reservations system with two main pages: 
-1. Reservations list page: Where users can view all existing reservations.
-2. Create reservation page: Where users can create a new reservation.
+1. Reservations list page: where users can view all existing reservations.
+2. Create reservation page: where users can create a new reservation.
 
 ## Project Structure
 - `frontend/` - Vue client app
