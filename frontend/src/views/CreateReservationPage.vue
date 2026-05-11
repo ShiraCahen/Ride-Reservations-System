@@ -26,53 +26,118 @@ interface FavoriteLocation {
   dropoffLocation: string;
   phoneNumber: string;
 }
- 
-const favoriteLocations: FavoriteLocation[] = [
-  {
-    key: 'home',
-    label: 'Home',
-    icon: '🏠',
-    riderFirstName: 'Shira',
-    riderLastName: 'Cahen',
-    dropoffLocation: 'Modiin',
-    phoneNumber: '0502152251',
-  },
-  {
-    key: 'office',
-    label: 'Office',
-    icon: '🏢',
-    riderFirstName: 'Shira',
-    riderLastName: 'Cahen',
-    dropoffLocation: 'HQ Rehovot',
-    phoneNumber: '0502152251',
-  },
-  {
-    key: 'airport',
-    label: 'Airport',
-    icon: '✈️',
-    riderFirstName: 'Shira',
-    riderLastName: 'Cahen',
-    dropoffLocation: 'Ben Gurion Airport',
-    phoneNumber: '0502152251',
-  },
-];
- 
+
+const LOCATION_ICONS: Record<string, string> = {
+  home: '🏠',
+  office: '🏢',
+  airport: '✈️',
+};
+
+const LOCATION_LABELS: Record<string, string> = {
+  home: 'Home',
+  office: 'Office',
+  airport: 'Airport',
+};
+
+const STORAGE_KEY = 'hq-quickfill-locations';
+
+function loadFavorites(): FavoriteLocation[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFavorites(favs: FavoriteLocation[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(favs));
+}
+
+const favoriteLocations = ref<FavoriteLocation[]>(loadFavorites());
 const activeFavorite = ref<string | null>(null);
- 
+const showCreateForm = ref(false);
+const editingKey = ref<string | null>(null);
+
+const newFav = reactive({
+  riderFirstName: '',
+  riderLastName: '',
+  phoneNumber: '',
+  dropoffLocation: '',
+  key: 'home',
+});
+
+function openCreateForm() {
+  editingKey.value = null;
+  newFav.riderFirstName = '';
+  newFav.riderLastName = '';
+  newFav.phoneNumber = '';
+  newFav.dropoffLocation = '';
+  newFav.key = 'home';
+  showCreateForm.value = true;
+}
+
+function openEditForm(fav: FavoriteLocation) {
+  editingKey.value = fav.key;
+  newFav.riderFirstName = fav.riderFirstName;
+  newFav.riderLastName = fav.riderLastName;
+  newFav.phoneNumber = fav.phoneNumber;
+  newFav.dropoffLocation = fav.dropoffLocation;
+  newFav.key = fav.key;
+  showCreateForm.value = true;
+}
+
+function cancelForm() {
+  showCreateForm.value = false;
+  editingKey.value = null;
+}
+
+function saveNewFavorite() {
+  if (!newFav.riderFirstName.trim() || !newFav.riderLastName.trim() || !newFav.phoneNumber.trim() || !newFav.dropoffLocation.trim()) return;
+
+  const entry: FavoriteLocation = {
+    key: newFav.key,
+    label: LOCATION_LABELS[newFav.key],
+    icon: LOCATION_ICONS[newFav.key],
+    riderFirstName: newFav.riderFirstName.trim(),
+    riderLastName: newFav.riderLastName.trim(),
+    dropoffLocation: newFav.dropoffLocation.trim(),
+    phoneNumber: newFav.phoneNumber.trim(),
+  };
+
+  const existing = favoriteLocations.value.findIndex(f => f.key === newFav.key);
+
+  if (editingKey.value !== null) {
+    // editing — replace by editingKey
+    const idx = favoriteLocations.value.findIndex(f => f.key === editingKey.value);
+    if (idx !== -1) favoriteLocations.value[idx] = entry;
+    else favoriteLocations.value.push(entry);
+  } else if (existing !== -1) {
+    favoriteLocations.value[existing] = entry;
+  } else {
+    favoriteLocations.value.push(entry);
+  }
+
+  saveFavorites(favoriteLocations.value);
+  cancelForm();
+}
+
+function deleteFavorite(key: string) {
+  favoriteLocations.value = favoriteLocations.value.filter(f => f.key !== key);
+  saveFavorites(favoriteLocations.value);
+  if (activeFavorite.value === key) activeFavorite.value = null;
+}
+
 function applyFavorite(fav: FavoriteLocation) {
-  // Toggle off if already active
   if (activeFavorite.value === fav.key) {
     activeFavorite.value = null;
     return;
   }
- 
   activeFavorite.value = fav.key;
   form.riderFirstName = fav.riderFirstName;
   form.riderLastName = fav.riderLastName;
   form.dropoffLocation = fav.dropoffLocation;
   form.phoneNumber = fav.phoneNumber;
- 
-  // Clear errors for affected fields
   clearFieldError('riderFirstName');
   clearFieldError('riderLastName');
   clearFieldError('dropoffLocation');
@@ -248,25 +313,77 @@ async function submitForm() {
     <h2>{{ pageTitle }}</h2>
  
     <!-- ── Favorite Locations ── -->
-    <div class="favorites-section">
-      <p class="favorites-label">⚡ Quick fill </p>
-      <div class="favorites-row">
-        <button
-          v-for="fav in favoriteLocations"
-          :key="fav.key"
-          type="button"
-          :class="['fav-btn', activeFavorite === fav.key && 'fav-btn--active']"
-          @click="applyFavorite(fav)"
-        >
-          <span class="fav-icon">{{ fav.icon }}</span>
-          <span class="fav-label">{{ fav.label }}</span>
-          <span class="fav-dest">  {{ fav.dropoffLocation }}</span>
-        </button>
-      </div>
-      <p v-if="activeFavorite" class="favorites-hint">
-        ✓ Details pre-filled. You can still edit any field below.
-      </p>
+<div class="favorites-section">
+  <div class="favorites-header">
+    <p class="favorites-label">⚡ Quick fill</p>
+    <button v-if="!showCreateForm" type="button" class="create-quickfill-btn" @click="openCreateForm">
+      + Create a quickfill
+    </button>
+  </div>
+
+  <!-- Create / Edit form -->
+  <div v-if="showCreateForm" class="quickfill-form">
+    <p class="quickfill-form-title">{{ editingKey ? 'Edit Quickfill' : 'New Quickfill' }}</p>
+    <div class="quickfill-form-grid">
+      <label>
+        <span class="label-text">First Name <span class="required-marker">*</span></span>
+        <input v-model="newFav.riderFirstName" type="text" placeholder="First name" />
+      </label>
+      <label>
+        <span class="label-text">Last Name <span class="required-marker">*</span></span>
+        <input v-model="newFav.riderLastName" type="text" placeholder="Last name" />
+      </label>
+      <label>
+        <span class="label-text">Phone Number <span class="required-marker">*</span></span>
+        <input v-model="newFav.phoneNumber" type="tel" placeholder="Phone number" />
+      </label>
+      <label>
+        <span class="label-text">Destination <span class="required-marker">*</span></span>
+        <input v-model="newFav.dropoffLocation" type="text" placeholder="e.g. Tel Aviv" />
+      </label>
+      <label class="full-width-label">
+        <span class="label-text">Location Type <span class="required-marker">*</span></span>
+        <select v-model="newFav.key">
+          <option value="home">🏠 Home</option>
+          <option value="office">🏢 Office</option>
+          <option value="airport">✈️ Airport</option>
+        </select>
+      </label>
     </div>
+    <div class="quickfill-form-actions">
+      <button type="button" class="save-quickfill-btn" @click="saveNewFavorite">Save</button>
+      <button type="button" class="cancel-quickfill-btn" @click="cancelForm">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div v-if="favoriteLocations.length > 0" class="favorites-row">
+    <div
+      v-for="fav in favoriteLocations"
+      :key="fav.key"
+      class="fav-item"
+    >
+      <button
+        type="button"
+        :class="['fav-btn', activeFavorite === fav.key && 'fav-btn--active']"
+        @click="applyFavorite(fav)"
+      >
+        <span class="fav-icon">{{ fav.icon }}</span>
+        <span class="fav-label">{{ fav.label }}</span>
+        <span class="fav-dest">→ {{ fav.dropoffLocation }}</span>
+      </button>
+      <div class="fav-actions">
+        <button type="button" class="fav-edit-btn" @click="openEditForm(fav)" title="Edit">✏️</button>
+        <button type="button" class="fav-delete-btn" @click="deleteFavorite(fav.key)" title="Delete">🗑️</button>
+      </div>
+    </div>
+  </div>
+  <p v-else-if="!showCreateForm" class="favorites-hint">No quickfills yet. Create one!</p>
+
+  <p v-if="activeFavorite" class="favorites-hint">
+    ✓ Details pre-filled. You can still edit any field below.
+  </p>
+</div>
  
     <div class="divider" />
  
