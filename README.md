@@ -4,14 +4,9 @@ A Small full-stack ride reservations system with two main pages:
 1. Reservations list page: Where users can view all existing reservations.
 2. Create reservation page: Where users can create a new reservation.
 
-- `frontend`: Vue client app (Vue 3 + TypeScript)
-- `backend`: Express REST API (Node.js + TypeScript)
-- `database`: MySQL (persistent storage)
-
 ## Project Structure
-
 - `frontend/` - Vue client app
-- `backend/` - Express REST API
+- `backend/` - REST API
 - MySQL database/table: `backend/sql/schema.sql` setup script for persistent storage.
 
 ## 1) Setup MySQL
